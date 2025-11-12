@@ -20,7 +20,7 @@ namespace ToDoList
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
-            
+
 
             builder.Services.AddCors(options =>
             {
