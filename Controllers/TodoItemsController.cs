@@ -50,7 +50,7 @@ namespace ToDoList.Controllers
             // Visszaadja az összes TodoItem-et a DbContext-en keresztül
             // Aszinkron hívás, hogy ne blokkolja a szervert
             return await _context.TodoItems
-                .Where(item => item.UserId == userId //Fontos SZÛRÉS!
+                .Where(item => item.UserId == userId) //Fontos SZÛRÉS!
                 .ToListAsync();
         }
 
@@ -60,10 +60,10 @@ namespace ToDoList.Controllers
 
         }
         [HttpPost]
-        public async Task<ActionResult<TodoItem>> PostTodoItem(CreateTodoDto todoDto)
+        public async Task<ActionResult<TodoItem>> PostTodoItem(CreateTodoItemDTO todoDto)
         {
             // 1. Kinyerjük a felhasználó ID-ját a tokenbõl
-            var userId = GetUserIdFromToken();
+            var userId = GetUserIDFromToken();
 
             // 2. Létrehozzuk az új TodoItem-et
             var todoItem = new TodoItem
@@ -83,7 +83,7 @@ namespace ToDoList.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<TodoItem>> GetTodoItem(long id)
         {
-            var userId = GetUserIdFromToken();
+            var userId = GetUserIDFromToken();
             var todoItem = await _context.TodoItems.FindAsync(id);
 
             if (todoItem == null)
