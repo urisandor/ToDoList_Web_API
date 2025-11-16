@@ -129,5 +129,43 @@ namespace ToDoList.Controllers
             // Visszaküldünk egy 204-es "No Content" választ, ami jelzi a sikeres törlést
             return NoContent();
         }
+        // Egy DTO (Data Transfer Object) az IsComplete állapot fogadásához
+        public class UpdateTodoStatusDto
+        {
+            public bool IsComplete { get; set; }
+        }
+
+        // PUT: api/TodoItems/5/status
+        // Ez a végpont csak az 'IsComplete' állapotot frissíti
+        [HttpPut("{id}/status")]
+        [IgnoreAntiforgeryToken] // Ezt adjuk hozzá itt is, a biztonság kedvéért
+        public async Task<IActionResult> UpdateTodoStatus(long id, [FromBody] UpdateTodoStatusDto statusDto)
+        {
+            // 1. Kinyerjük a felhasználó ID-ját a tokenbõl
+            var userId = GetUserIDFromToken();
+
+            // 2. Megkeressük a teendõt
+            var todoItem = await _context.TodoItems.FindAsync(id);
+
+            if (todoItem == null)
+            {
+                return NotFound("A teendõ nem található.");
+            }
+
+            // 3. Ellenõrizzük, hogy a teendõ az övé-e
+            if (todoItem.UserId != userId)
+            {
+                return Forbid("Nincs jogosultsága módosítani ezt a teendõt.");
+            }
+
+            // 4. Frissítjük az állapotot
+            todoItem.IsComplete = statusDto.IsComplete;
+
+            // 5. Elmentjük a változást az adatbázisba
+            await _context.SaveChangesAsync();
+
+            // Visszaküldünk egy "Ok" választ
+            return Ok(todoItem); // Visszaküldhetjük a frissített objektumot
+        }
     }
 }
