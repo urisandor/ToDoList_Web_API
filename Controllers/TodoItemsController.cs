@@ -60,6 +60,7 @@ namespace ToDoList.Controllers
 
         }
         [HttpPost]
+        [IgnoreAntiforgeryToken]
         public async Task<ActionResult<TodoItem>> PostTodoItem(CreateTodoItemDTO todoDto)
         {
             // 1. Kinyerjük a felhasználó ID-ját a tokenbõl
